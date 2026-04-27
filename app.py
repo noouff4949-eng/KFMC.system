@@ -99,7 +99,11 @@ class AppliedWorkshop(db.Model):
     abha_dates = db.Column(db.Text)
 with app.app_context():
     db.create_all()
+
+    print("🔥 Loading programs...")
     load_excel_to_db('programs.xlsx', db, Course)
+
+    print("🔥 Loading workshops...")
     load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
 class Message(db.Model):
     __tablename__ = 'messages'
@@ -119,7 +123,11 @@ class AdminUser(db.Model):
     role = db.Column(db.String(50), default='viewer')
 with app.app_context():
     db.create_all()
+
+    print("🔥 Loading programs...")
     load_excel_to_db('programs.xlsx', db, Course)
+
+    print("🔥 Loading workshops...")
     load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
 class ClearanceRequest(db.Model):
     __tablename__ = 'clearance_requests'
