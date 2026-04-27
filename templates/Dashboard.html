@@ -249,6 +249,9 @@ function viewDetails(id) {
                 <div class="detail-row"><i class="fas fa-id-card"></i> <b>الهوية:</b> ${data.national_id}</div>
                 <div class="detail-row"><i class="fas fa-phone-alt"></i> <b>الجوال:</b> ${data.phone}</div>
                 <div class="detail-row"><i class="fas fa-envelope"></i> <b>البريد الإلكتروني:</b> ${data.email}</div>
+                <div class="detail-row"><i class="fas fa-user-tie"></i> <b>اسم المشرف:</b> ${data.supervisor_name || '-'}</div>
+                <div class="detail-row"><i class="fas fa-envelope"></i> <b>إيميل المشرف:</b> ${data.supervisor_email || '-'}</div>
+                <div class="detail-row"><i class="fas fa-phone"></i> <b>جوال المشرف:</b> ${data.supervisor_phone || '-'}</div>
                 
                 <div class="detail-row"><i class="fas fa-star"></i> <b>الحالة الإدارية:</b> ${data.status}</div>
                 
