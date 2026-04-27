@@ -23,7 +23,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_dir, 'k
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
+with app.app_context():
+    db.create_all()
+    load_excel_to_db('programs.xlsx', db, Course)
 
 class CourseRegistration(db.Model):
     __tablename__ = 'course_registrations'
