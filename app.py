@@ -145,13 +145,15 @@ class ClearanceRequest(db.Model):
     status = db.Column(db.String(50), default='Pending')
 
 # --- المسارات (Routes) ---
-@app.route('/force-load')
-def force_load():
+@app.route('/fix-programs')
+def fix_programs():
     try:
-        with app.app_context():
-            db.create_all()
-            load_excel_to_db('programs.xlsx', db, Course)
-        return "✅ تم تحميل البرامج"
+        db.session.query(Course).delete()  # تنظيف القديم
+        db.session.commit()
+
+        load_excel_to_db('programs.xlsx', db, Course)
+
+        return "✅ تم تحميل البرامج القصيرة"
     except Exception as e:
         return f"❌ خطأ: {str(e)}"
 
