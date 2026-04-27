@@ -131,6 +131,11 @@ class ClearanceRequest(db.Model):
     status = db.Column(db.String(50), default='Pending')
 
 # --- المسارات (Routes) ---
+@app.route('/load-data')
+def load_data():
+    with app.app_context():
+        load_excel_to_db('programs.xlsx', db, Course)
+    return "تم تحميل البيانات"
 @app.before_request
 def setup_once():
     if not hasattr(app, 'db_initialized'):
