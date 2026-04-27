@@ -23,7 +23,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_dir, 'k
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
+with app.app_context():
+    db.create_all()
+    load_excel_to_db('programs.xlsx', db, Course)
 # --- تعريف الجداول (Models) ---
 
 class CourseRegistration(db.Model):
@@ -538,9 +540,4 @@ def register_course():
         db.session.rollback(); return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-
-        load_excel_to_db('programs.xlsx', db, Course)
-
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(debug=True)
