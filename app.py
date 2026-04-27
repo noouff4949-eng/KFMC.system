@@ -288,8 +288,9 @@ def get_applicant_details(id):
 
 @app.route('/programs')
 def programs():
-    smart_courses = Course.query.all()
-    return render_template('ShortPrograms.html', courses=smart_courses)
+    today = datetime.today().date()
+smart_courses = Course.query.filter(Course.start_date_m >= today).order_by(Course.start_date_m.asc()).all()
+return render_template('ShortPrograms.html', courses=smart_courses)
     
 @app.route('/available')
 def available():
