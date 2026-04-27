@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | نظام الإدارة</title>
+    <link rel='icon' href="{{ url_for('static', filename='Logo1.webp') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Login.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-box">
+            <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="Logo">
+        </div>
+        <h1>تسجيل دخول الإدارة</h1>
+        <p>مرحباً بك مجدداً، يرجى إدخال بياناتك للوصول</p>
+
+        <form id="AdminLoginForm">
+            <div class="input-group">
+                <label>اسم المستخدم أو البريد</label>
+                <i class="fas fa-user-shield"></i>
+                <input type="text" name="username" placeholder="admin" required>
+            </div>
+
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="login-btn">دخول النظام</button>
+        </form>
+
+        <div class="footer-links">
+            <a href="/">العودة للرئيسية</a>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById("AdminLoginForm").addEventListener("submit", function(e) {
+        e.preventDefault(); // منع تحديث الصفحة
+        
+        const formData = new FormData(this);
+        const loginBtn = document.querySelector('.login-btn');
+        
+        // تغيير حالة الزر أثناء التحقق لإعطاء إيحاء بالاحترافية
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> جاري التحقق...';
+
+        fetch('/login', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json()) 
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم الدخول بنجاح!',
+                    text: 'جاري تحويلك إلى لوحة الإدارة...',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.href = "/dashboard"; 
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'فشل تسجيل الدخول',
+                    text: data.message,
+                    confirmButtonText: 'حاول مجدداً',
+                    confirmButtonColor: '#0b3c5d'
+                });
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'دخول النظام';
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ تقني',
+                text: 'فشل الاتصال بالخادم، يرجى التأكد من تشغيل ملف app.py'
+            });
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'دخول النظام';
+        });
+    });
+    </script>
+    <script src="{{ url_for('static', filename='translator.js') }}"></script>
+
+</body>
+</html>

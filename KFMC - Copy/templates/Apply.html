@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة التميز | التجمع الصحي الثاني</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Apply.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" href="{{ url_for('static', filename='Logo1.webp') }}">
+</head>
+<body>
+
+    <div class="main-card">
+        <div class="info-side">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="شعار التجمع">
+            </div>
+            <h2>بوابة التميز الرقمية</h2>
+            <p>انضم إلينا في رحلة تطوير مهاراتك داخل أحد أكبر التجمعات الصحية في المملكة.</p>
+            <a href="/" style="margin-top: 20px; padding: 12px 20px; background: white; color: var(--dark); border-radius: 8px; text-decoration: none; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: inline-block;">العودة إلى الرئيسية</a>
+        </div>
+
+        <div class="form-side">
+            <div class="form-header">
+                <h1>طلب انضمام جديد</h1>
+                <p style="color: #888; font-size: 14px;">أدخل بياناتك بدقة لضمان سرعة معالجة الطلب</p>
+            </div>
+
+            <form id="ApplicationForm" class="form-grid">
+
+                <div class="input-box full">
+                    <label><i class="fas fa-user-edit"></i> الاسم الكامل</label>
+                    <input type="text" name="full_name" placeholder="مثال: صالح بن محمد" required>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-id-card"></i> رقم الهوية</label>
+                    <input type="text" name="national_id" maxlength="10" placeholder="10xxxxxxxx" required>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-phone-alt"></i> رقم الجوال</label>
+                    <input type="text" name="phone" maxlength="10" placeholder="05xxxxxxxx" required>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-university"></i> اسم الجامعة</label>
+                    <input type="text" name="university" placeholder="مثال: جامعة الملك سعود" required>
+                </div>
+
+                <!-- التخصص -->
+                <div class="input-box">
+                    <label><i class="fas fa-graduation-cap"></i> التخصص</label>
+                    <select name="major" required>
+                        <option value="">اختر التخصص</option>
+
+                        <!-- صحي -->
+                        <option value="المختبرات الطبية">المختبرات الطبية</option>
+                        <option value="الأشعة">الأشعة</option>
+                        <option value="العلاج الطبيعي">العلاج الطبيعي</option>
+                        <option value="العلاج الوظيفي">العلاج الوظيفي</option>
+                        <option value="التغذية السريرية">التغذية السريرية</option>
+                        <option value="الصيدلة">الصيدلة</option>
+                        <option value="الرعاية التنفسية">الرعاية التنفسية</option>
+                        <option value="تقنية القلب">تقنية القلب</option>
+                        <option value="الفسيولوجيا العصبية">الفسيولوجيا العصبية</option>
+                        <option value="سحب الدم (Phlebotomy)">سحب الدم (Phlebotomy)</option>
+                        <option value="الأطراف الصناعية">الأطراف الصناعية</option>
+                        <option value="التعقيم المركزي">التعقيم المركزي</option>
+
+                        <!-- تقني -->
+                        <option value="علوم الحاسب">علوم الحاسب</option>
+                        <option value="تقنية المعلومات (IT)">تقنية المعلومات (IT)</option>
+                        <option value="الأمن السيبراني">الأمن السيبراني</option>
+                        <option value="نظم المعلومات">نظم المعلومات</option>
+                        <option value="هندسة البرمجيات">هندسة البرمجيات</option>
+                    </select>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-calendar-alt"></i> سنة التخرج</label>
+                    <input type="number" name="graduation_year" min="2020" max="2030" placeholder="مثال: 2024" required>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-envelope-open-text"></i> البريد الإلكتروني</label>
+                    <input type="email" name="email" placeholder="student@edu.sa" required>
+                </div>
+
+                <!-- مشرف التدريب -->
+                <div class="input-box">
+                    <label><i class="fas fa-user-tie"></i> اسم مشرف الحامعي التدريب</label>
+                    <input type="text" name="supervisor_name" placeholder="مثال: د. محمد أحمد" required>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-envelope"></i> إيميل مشرف الجامعي التدريب</label>
+                    <input type="email" name="supervisor_email" placeholder="example@hospital.sa" required>
+                </div>
+
+                <div class="input-box">
+                    <label><i class="fas fa-phone"></i> رقم جوال مشرف الجامعي التدريب</label>
+                    <input type="text" name="supervisor_phone" maxlength="10" placeholder="05xxxxxxxx" required>
+                </div>
+
+                <div class="input-box full">
+                    <label><i class="fas fa-file-upload"></i> ارفاق خطاب الجامعة</label>
+                    <input type="file" name="university_letter" accept=".pdf, .jpg, .jpeg, .png" required>
+                </div>
+
+                <div class="input-box full">
+                    <button type="submit" class="submit-btn">إرسال الطلب الآن</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+<script>
+document.getElementById("ApplicationForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+    fetch('/apply', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            Swal.fire({
+                title: 'تم الإرسال بنجاح!',
+                text: 'وصل طلبك إلينا، يمكنك متابعة الحالة برقم هويتك لاحقاً.',
+                icon: 'success',
+                confirmButtonText: 'حسناً',
+                confirmButtonColor: '#0b3c5d'
+            }).then(() => {
+                window.location.href = "/";
+            });
+        } else {
+            Swal.fire({
+                title: 'خطأ في التقديم',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'حاول مجدداً'
+            });
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'إرسال الطلب الآن';
+        }
+    })
+    .catch(() => {
+        Swal.fire({
+            title: 'خطأ في الاتصال',
+            text: 'تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.',
+            icon: 'error'
+        });
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'إرسال الطلب الآن';
+    });
+});
+</script>
+
+<script src="{{ url_for('static', filename='translator.js') }}"></script>
+
+</body>
+</html>

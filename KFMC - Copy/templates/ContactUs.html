@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التواصل والدعم | التجمع الصحي الثاني</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel='icon' href="{{ url_for('static', filename='Logo1.webp') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='ContactUs.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo-section">
+        <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="شعار التجمع" class="logo-img">
+        <div class="logo-text">
+            <h2>التجمع الصحي الثاني</h2>
+            <span>Second Health Cluster</span>
+        </div>
+    </a>
+    <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+        <button id="lang-switch-btn" onclick="toggleLanguage()" class="staff-login-btn">
+            <i class="fas fa-globe"></i> 
+            <span id="lang-text">English</span>
+        </button>
+    
+        <a href="/login" class="staff-login-btn">
+            <i class="fas fa-user-lock"></i>
+            <span>دخول الموظفين</span>
+        </a>
+    </div>
+</header>
+
+<nav>
+    <div class="nav-bar">
+        <a href="/" class="nav-link">الرئيسية</a>
+        <a href="/steps" class="nav-link">خطوات التسجيل</a>
+        <a href="/programs" class="nav-link">البرامج القصيرة</a>
+        <a href="/available" class="nav-link">الحلقات التطبيقية</a>
+        <a href="/track" class="nav-link">متابعة الطلب</a>
+        <a href="/clearance" class="nav-link">إخلاء الطرف</a>
+        <a href="/contact" class="nav-link active">تواصل معنا</a>
+    </div>
+</nav>
+
+<section class="support-hero">
+    <h1 style="font-size: 32px; margin: 0;">مركز التواصل والدعم</h1>
+    <p style="opacity: 0.8; margin-top: 10px;">نحن هنا لخدمتكم والإجابة على استفساراتكم على مدار الساعة</p>
+</section>
+
+<div class="container">
+    <div class="contact-grid">
+        <div class="glass-card">
+            <h3 style="color: #0b3c5d; margin-bottom: 30px;">معلومات التواصل</h3>
+            
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <small style="color:#aaa">البريد الإلكتروني</small><br>
+                    <strong>training@rc2.sa</strong>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+                <div>
+                    <small style="color:#aaa">رقم الهاتف</small><br>
+                    <strong>+966 11 234 5678</strong>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                    <small style="color:#aaa">الموقع</small><br>
+                    <strong>الرياض، المملكة العربية السعودية</strong>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                    <small style="color:#aaa">ساعات العمل</small><br>
+                    <strong>الأحد – الخميس | 8ص - 4م</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <form id="ContactForm">
+                <h3>أرسل لنا رسالة مباشرة</h3>
+                <div class="input-group">
+                    <input type="text" name="name" placeholder="الاسم الكامل" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="subject" placeholder="عنوان الرسالة" required>
+                </div>
+                <div class="input-group">
+                    <textarea name="message" placeholder="كيف يمكننا مساعدتك؟" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">إرسال الرسالة الآن</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="faq-section">
+        <h2 style="color: #0b3c5d;">الأسئلة الشائعة</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question">كيف يمكنني التقديم على برامج التدريب؟ <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-answer">يمكنك التقديم مباشرة عبر صفحات "البرامج القصيرة" أو "الحلقات التطبيقية" بالضغط على زر "سجل الآن".</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">كيف يمكنني متابعة حالة طلبي؟ <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-answer">عبر التوجه لصفحة "متابعة الطلب" وإدخال رقم الهوية الوطنية الخاص بك.</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<footer style="text-align: center; padding: 40px; color: #aaa; font-size: 13px;">
+    &copy; 2026 جميع الحقوق محفوظة - التجمع الصحي الثاني بالرياض
+</footer>
+
+<script>
+    // تفعيل قائمة الأسئلة الشائعة (Accordion)
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            item.classList.toggle('active');
+        });
+    });
+
+    // إرسال النموذج بتقنية AJAX (بدون تحديث الصفحة)
+    document.getElementById("ContactForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('/contact', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                // إظهار تنبيه النجاح الفخم
+                Swal.fire({
+                    title: 'تم الإرسال بنجاح!',
+                    text: 'شكراً لتواصلك معنا، سنقوم بالرد على استفسارك قريباً.',
+                    icon: 'success',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#0b3c5d'
+                });
+                this.reset(); // تفريغ الحقول بعد النجاح
+            } else {
+                // إظهار تنبيه في حال وجود خطأ
+                Swal.fire({
+                    title: 'فشل الإرسال',
+                    text: 'حدث خطأ: ' + data.message,
+                    icon: 'error',
+                    confirmButtonText: 'إغلاق'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'خطأ في الاتصال',
+                text: 'تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.',
+                icon: 'error',
+                confirmButtonText: 'إغلاق'
+            });
+        });
+    });
+</script>
+    <script src="{{ url_for('static', filename='translator.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحلقات التطبيقية | التجمع الصحي الثاني</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ShortPrograms.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='Logo1.webp') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* تنسيقات الـ Pop-up الموحدة */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px);
+        }
+        .modal-card {
+            background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { float: left; cursor: pointer; font-size: 24px; color: #888; }
+        .modal-form-group { margin-bottom: 15px; text-align: right; }
+        .modal-form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #0b3c5d; }
+        .modal-form-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: 'Almarai'; outline: none; }
+        .modal-form-group input:focus { border-color: #0b3c5d; }
+        .btn-submit-reg { width: 100%; padding: 14px; background: #0b3c5d; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-submit-reg:hover { background: #082d46; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo-section">
+            <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="شعار التجمع" class="logo-img">
+            <div class="logo-text">
+                <h2>التجمع الصحي الثاني</h2>
+                <span>Second Health Cluster</span>
+            </div>
+        </a>
+        <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+            <button id="lang-switch-btn" onclick="toggleLanguage()" class="staff-login-btn">
+                <i class="fas fa-globe"></i> 
+                <span id="lang-text">English</span>
+            </button>
+            <a href="/login" class="staff-login-btn">
+                <i class="fas fa-user-lock"></i>
+                <span>دخول الموظفين</span>
+            </a>
+        </div>
+    </header>
+
+    <nav>
+        <div class="nav-bar">
+            <a href="/" class="nav-link">الرئيسية</a>
+            <a href="/steps" class="nav-link">خطوات التسجيل</a>
+            <a href="/programs" class="nav-link">البرامج القصيرة</a>
+            <a href="/available" class="nav-link active">الحلقات التطبيقية</a>
+            <a href="/track" class="nav-link">متابعة الطلب</a>
+            <a href="/clearance" class="nav-link">إخلاء الطرف</a>
+            <a href="/contact" class="nav-link">تواصل معنا</a>
+        </div>
+    </nav>
+
+    <section class="hero-section" style="background: linear-gradient(rgba(7, 45, 75, 0.9), rgba(11, 95, 179, 0.8)), url('/static/KFMC.jpg') center/cover;">
+        <h1>الحلقات التطبيقية</h1>
+        <p>استكشف وقدم على الحلقات التطبيقية المتاحة في مختلف المدن</p>
+    </section>
+
+    <main class="programs-container">
+        
+        <div class="controls-wrapper" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            <div class="search-box-container" style="flex-grow: 1;">
+                <input type="text" id="courseSearch" onkeyup="filterContent()" placeholder="🔍 ابحث عن اسم البرنامج، المدينة، أو التاريخ..." style="width: 100%; max-width: 500px; padding: 12px 25px; border-radius: 30px; border: 2px solid #0b3c5d; outline: none; font-family: 'Almarai';">
+            </div>
+            
+            <div class="view-switcher" style="display: flex; gap: 10px;">
+                <button onclick="switchView('grid')" class="view-btn active" id="btnGrid"><i class="fas fa-th-large"></i> الكروت</button>
+                <button onclick="switchView('list')" class="view-btn" id="btnList"><i class="fas fa-list"></i> الجدول</button>
+            </div>
+        </div>
+
+        <div id="gridView" class="programs-grid">
+            {% for course in courses %}
+            <div class="course-card-item">
+                <div class="card-header-mini tech-bg" style="background: linear-gradient(45deg, #0b3c5d, #0b5fb3);">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ course.location }}</span>
+                </div>
+                
+                <div class="card-content">
+                    <h3>{{ course.title }}</h3>
+                    
+                    <div class="card-details" style="margin-top: 15px;">
+                        <p style="margin-bottom: 8px;">
+                            <i class="fas fa-calendar-check" style="color: #28a745;"></i> 
+                            <strong>التفاصيل:</strong> {{ course.date_details }}
+                        </p>
+                        <p>
+                            <i class="fas fa-clock" style="color: #0b3c5d;"></i> 
+                            <strong>المدة:</strong> {{ course.duration }} أيام
+                        </p>
+                    </div>
+
+                    <button onclick="openRegModal('{{ course.id }}', '{{ course.title }}', '{{ course.location }}')" class="btn-register-card" style="margin-top: 15px; width: 100%; border: none; cursor: pointer;">سجل الآن</button>
+                </div>
+            </div>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #999;">
+                <i class="fas fa-info-circle" style="font-size: 40px; margin-bottom: 10px;"></i>
+                <p>لا توجد بيانات متاحة حالياً.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="listView" class="data-section" style="display: none; overflow-x: auto;">
+            <table id="programsTable" style="width: 100%; border-collapse: collapse; background: white;">
+                <thead style="background: #0b3c5d; color: white;">
+                    <tr>
+                        <th style="padding: 15px; text-align: right;">اسم البرنامج</th>
+                        <th style="text-align: right;">المدينة</th>
+                        <th style="text-align: right;">التاريخ والفئة</th>
+                        <th style="text-align: right;">المدة</th>
+                        <th style="text-align: right;">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;"><strong>{{ course.title }}</strong></td>
+                        <td><span style="background: #eef4f9; padding: 4px 10px; border-radius: 5px; color: #0b5fb3; font-weight: bold;">{{ course.location }}</span></td>
+                        <td>{{ course.date_details }}</td>
+                        <td>{{ course.duration }} أيام</td>
+                        <td><button onclick="openRegModal('{{ course.id }}', '{{ course.title }}', '{{ course.location }}')" style="background: #28a745; color: white; padding: 5px 15px; border-radius: 5px; border: none; cursor: pointer; font-size: 13px;">سجل</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="registrationModal" class="modal-overlay">
+        <div class="modal-card">
+            <span class="close-modal" onclick="closeRegModal()">&times;</span>
+            <h3 id="modalCourseTitle" style="color: #0b3c5d; margin-bottom: 20px;">طلب التحاق بالحلقة</h3>
+            
+            <form id="appliedRegForm">
+                <input type="hidden" id="selectedWorkshopId">
+                
+                <div class="modal-form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="appFullName" placeholder="أدخل اسمك الكامل" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>رقم الهوية / الإقامة</label>
+                    <input type="text" id="appNationalId" maxlength="10" placeholder="10XXXXXXXX" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="appEmail" placeholder="example@mail.com" required>
+                </div>
+
+                <button type="submit" class="btn-submit-reg">إرسال طلب التسجيل</button>
+            </form>
+        </div>
+    </div>
+
+    <footer style="background: #0b3c5d; color: white; padding: 30px; text-align: center; margin-top: 50px;">
+        <p style="opacity: 0.7; font-size: 14px;">&copy; 2026 التجمع الصحي الثاني - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script>
+        // وظائف البوب اب المحدثة للربط الصحيح
+        function openRegModal(id, title, location) {
+            document.getElementById('selectedWorkshopId').value = id;
+            document.getElementById('modalCourseTitle').innerText = "التسجيل في: " + title + " (" + location + ")";
+            document.getElementById('registrationModal').style.display = 'flex';
+        }
+
+        function closeRegModal() {
+            document.getElementById('registrationModal').style.display = 'none';
+        }
+
+        // إرسال البيانات المحدث لإرسال workshop_id بدلاً من العنوان
+        document.getElementById('appliedRegForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                workshop_id: document.getElementById('selectedWorkshopId').value,
+                full_name: document.getElementById('appFullName').value,
+                national_id: document.getElementById('appNationalId').value,
+                email: document.getElementById('appEmail').value
+            };
+
+            fetch('/register_course', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    Swal.fire('تم الإرسال', 'تم استلام طلبك للحلقة التطبيقية بنجاح', 'success');
+                    closeRegModal();
+                    document.getElementById('appliedRegForm').reset();
+                } else {
+                    Swal.fire('خطأ', result.message || 'تعذر التسجيل حالياً', 'error');
+                }
+            })
+            .catch(err => Swal.fire('خطأ', 'فشل الاتصال بالسيرفر', 'error'));
+        });
+
+        // تبديل العرض والبحث
+        function switchView(view) {
+            const grid = document.getElementById('gridView');
+            const list = document.getElementById('listView');
+            const btnGrid = document.getElementById('btnGrid');
+            const btnList = document.getElementById('btnList');
+            if (view === 'grid') { grid.style.display = 'grid'; list.style.display = 'none'; btnGrid.classList.add('active'); btnList.classList.remove('active'); } 
+            else { grid.style.display = 'none'; list.style.display = 'block'; btnGrid.classList.remove('active'); btnList.classList.add('active'); }
+        }
+
+        function filterContent() {
+            let input = document.getElementById('courseSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('course-card-item');
+            for (let card of cards) { card.style.display = card.textContent.toLowerCase().includes(input) ? "" : "none"; }
+            let rows = document.querySelector("#programsTable tbody").rows;
+            for (let row of rows) { row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none"; }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('registrationModal')) closeRegModal();
+        }
+    </script>
+    <script src="{{ url_for('static', filename='translator.js') }}"></script>
+</body>
+</html>
