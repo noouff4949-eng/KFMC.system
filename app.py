@@ -97,14 +97,7 @@ class AppliedWorkshop(db.Model):
     jeddah_dates = db.Column(db.Text)
     dammam_dates = db.Column(db.Text)
     abha_dates = db.Column(db.Text)
-with app.app_context():
-    db.create_all()
 
-    print("🔥 Loading programs...")
-    load_excel_to_db('programs.xlsx', db, Course)
-
-    print("🔥 Loading workshops...")
-    load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
 class Message(db.Model):
     __tablename__ = 'messages'
     id = db.Column(db.Integer, primary_key=True)
@@ -121,14 +114,7 @@ class AdminUser(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), default='viewer')
-with app.app_context():
-    db.create_all()
 
-    print("🔥 Loading programs...")
-    load_excel_to_db('programs.xlsx', db, Course)
-
-    print("🔥 Loading workshops...")
-    load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
 class ClearanceRequest(db.Model):
     __tablename__ = 'clearance_requests'
     id = db.Column(db.Integer, primary_key=True)
@@ -144,18 +130,14 @@ class ClearanceRequest(db.Model):
     request_date = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(50), default='Pending')
 
+with app.app_context():
+    db.create_all()
 # --- المسارات (Routes) ---
-@app.route('/fix-programs')
-def fix_programs():
-    try:
-        db.session.query(Course).delete()  # تنظيف القديم
-        db.session.commit()
-
-        load_excel_to_db('programs.xlsx', db, Course)
-
-        return "✅ تم تحميل البرامج القصيرة"
-    except Exception as e:
-        return f"❌ خطأ: {str(e)}"
+@app.route('/load-data')
+def load_data():
+    load_excel_to_db('programs.xlsx', db, Course)
+    load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
+    return "تم تحميل البيانات"
 
 @app.route('/')
 def index(): return render_template('index.html')
