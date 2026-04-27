@@ -1,7 +1,7 @@
 import pandas as pd
-from app import app, db, AppliedWorkshop
+from datetime import datetime
 
-def load_workshops(file_path):
+def load_workshops_to_db(file_path, db, AppliedWorkshop):
     try:
         # قراءة ملف الإكسل (تأكد أن اسم الملف مطابق)
         df = pd.read_excel(file_path)
