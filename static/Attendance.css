@@ -1,0 +1,61 @@
+/* Attendance.css - نسخة مطابقة لتصميم الداشبورد الأصلي */
+:root {
+    --bg: #f0f2f5;
+    --sidebar-color: #061e3d;
+    --primary: #007bff;
+    --accent: #00d2ff;
+    --white: #ffffff;
+    --text-main: #2d3436;
+    --danger: #ff4757;
+    --success: #2ecc71;
+}
+
+body {
+    font-family: 'Almarai', sans-serif;
+    background-color: var(--bg);
+    margin: 0; display: flex; min-height: 100vh;
+}
+
+/* --- القائمة الجانبية (Sidebar) الموحدة --- */
+.sidebar {
+    width: 280px; background: var(--sidebar-color); color: white; display: flex;
+    flex-direction: column; padding: 30px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    position: fixed; height: 100vh; right: 0; z-index: 100;
+}
+
+.sidebar-brand { display: flex; align-items: center; gap: 15px; margin-bottom: 50px; padding: 0 10px; }
+.sidebar-brand img { width: 50px; filter: drop-shadow(0 0 5px var(--accent)); }
+.sidebar-brand h2 { margin: 0; font-size: 20px; font-weight: 800; }
+
+.nav-menu { list-style: none; padding: 0; }
+.nav-link { text-decoration: none; color: inherit; display: block; margin-bottom: 8px; }
+.nav-item {
+    padding: 15px 20px; border-radius: 12px; cursor: pointer;
+    transition: 0.3s; display: flex; align-items: center; gap: 12px;
+    font-weight: 400; color: rgba(255,255,255,0.7);
+}
+.nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: var(--accent); transform: translateX(-5px); }
+
+/* --- المحتوى الرئيسي --- */
+.main-container { flex: 1; margin-right: 320px; padding: 40px; }
+.header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.header-top h1 { color: var(--sidebar-color); font-weight: 800; font-size: 28px; margin: 0; }
+
+/* --- الجداول --- */
+.data-section { background: var(--white); border-radius: 24px; padding: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.04); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: right; padding: 20px; color: #b5b5c3; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+td { padding: 20px; border-bottom: 1px solid #f1f1f4; color: var(--text-main); font-weight: 600; }
+
+/* --- الأزرار والحالات --- */
+.action-btn { width: 35px; height: 35px; border-radius: 10px; border: none; cursor: pointer; transition: 0.2s; margin-left: 5px; }
+.approve-btn { background: #c9f7f5; color: #1bc5bd; }
+.reject-btn { background: #ffe2e5; color: #f64e60; }
+.badge-info { background-color: #17a2b8; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; }
+
+/* تجاوب الجوال */
+@media (max-width: 900px) {
+    .sidebar { width: 70px; padding: 20px 10px; }
+    .nav-item span, .sidebar-brand h2 { display: none; }
+    .main-container { margin-right: 90px; padding: 20px; }
+}

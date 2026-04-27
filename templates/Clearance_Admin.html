@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة طلبات إخلاء الطرف | النظام الذكي</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .attachment-link { color: #0b5fb3; text-decoration: none; font-weight: bold; }
+        .attachment-link:hover { text-decoration: underline; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+        
+        /* ألوان الحالات المحدثة */
+        .status-pending { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .status-approved { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        
+        .action-btn { border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-approve { background: #c9f7f5; color: #1bc5bd; }
+        .btn-approve:hover { background: #1bc5bd; color: white; }
+        
+        .completed-icon { color: #28a745; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="Logo">
+            <h2>لوحة الإدارة</h2>
+        </div>
+        <ul class="nav-menu">
+            <a href="/" class="nav-link"><li class="nav-item"><i class="fas fa-home"></i> <span>الرئيسية</span></li></a>
+            <a href="/dashboard" class="nav-link"><li class="nav-item"><i class="fas fa-th-large"></i> <span>الداشبورد</span></li></a>
+            <a href="/attendance" class="nav-link"><li class="nav-item"><i class="fas fa-user-check"></i> <span>الحضور والانصراف</span></li></a>
+            <a href="/evaluation" class="nav-link"><li class="nav-item"><i class="fas fa-star"></i> <span>تقييم المتدربين</span></li></a>
+            <a href="/admin/clearance" class="nav-link active"><li class="nav-item"><i class="fas fa-file-signature"></i> <span>طلبات إخلاء الطرف</span></li></a>
+            <a href="/settings" class="nav-link"><li class="nav-item"><i class="fas fa-cog"></i> <span>الإعدادات</span></li></a>
+            <a href="/logout" class="nav-link" style="margin-top: auto; color: #ff4d4d;"><li class="nav-item"><i class="fas fa-sign-out-alt"></i> <span>تسجيل الخروج</span></li></a>
+        </ul>
+    </aside>
+
+    <main class="main-container">
+        <div class="header-top">
+            <h1 style="color: #061e3d;">إدارة طلبات إخلاء الطرف</h1>
+            <div style="background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); color: #0b3c5d;">
+                <i class="fas fa-user-shield"></i> {{ session.get('user_name') }}
+            </div>
+        </div>
+
+        <div class="data-section">
+            <h3 style="margin-bottom: 25px; color: #0b3c5d;"><i class="fas fa-list-alt"></i> الطلبات الواردة</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>المتدرب</th>
+                        <th>الإدارة</th>
+                        <th>رقم الموظف</th>
+                        <th>التاريخ</th>
+                        <th>الحالة</th>
+                        <th>العمليات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>
+                            <strong>{{ req.name_ar }}</strong><br>
+                            <small>{{ req.name_en }}</small>
+                        </td>
+                        <td>{{ req.admin_name }}</td>
+                        <td><span style="font-family: monospace;">{{ req.employee_no }}</span></td>
+                        <td>{{ req.request_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if req.status == 'Approved' %}
+                                <span class="status-badge status-approved">مكتمل</span>
+                            {% else %}
+                                <span class="status-badge status-pending">قيد الانتظار</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if session.get('role') != 'viewer' %}
+                             <button class="action-btn view-btn" onclick="viewClearance('{{ req.id }}')" title="عرض التفاصيل">
+                                 <i class="fas fa-eye"></i>
+                             </button>
+                                {% if req.status != 'Approved' %}
+                                <button class="action-btn btn-approve" title="اعتماد إخلاء الطرف" onclick="confirmApproval('{{ req.id }}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                {% else %}
+                                <i class="fas fa-check-double completed-icon" title="تم الاعتماد مسبقاً"></i>
+                                {% endif %}
+                            {% else %}
+                                <i class="fas fa-lock" style="color: #ccc;" title="وضع المشاهدة فقط"></i>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #999;">لا توجد طلبات إخلاء طرف مقدمة حالياً.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+    // دالة إرسال طلب التحديث للباك إند
+    function confirmApproval(requestId) {
+        Swal.fire({
+            title: 'هل أنت متأكد؟',
+            text: "بمجرد الاعتماد سيتم وضع علامة 'مكتمل' على هذا الطلب",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0b3c5d',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'نعم، اعتمد الآن',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // إظهار حالة التحميل
+                Swal.fire({ title: 'جاري التحديث...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+                // إرسال طلب الـ POST للباك إند
+                fetch('/update_clearance_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: requestId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            title: 'تم الاعتماد!',
+                            text: 'تم تحديث حالة إخلاء الطرف بنجاح',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload(); // إعادة تحميل الصفحة لرؤية الحالة الجديدة
+                        });
+                    } else {
+                        Swal.fire('خطأ', data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    Swal.fire('خطأ تقني', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
+                });
+            }
+        });
+    }
+
+    
+    </script>
+    <script>
+function viewClearance(id) {
+    fetch(`/get_clearance_details/${id}`)
+    .then(res => res.json())
+    .then(data => {
+
+        const fileHtml = data.attachment
+            ? `<a href="/static/uploads/${data.attachment}" target="_blank" style="color:#0b5fb3;">
+                    <i class="fas fa-download"></i> عرض المرفق
+               </a>`
+            : `<span style="color:#999;">لا يوجد مرفق</span>`;
+
+        Swal.fire({
+            title: '<strong>تفاصيل طلب إخلاء الطرف</strong>',
+            html: `
+                <div class="swal-details-container">
+                    <div class="detail-row"><i class="fas fa-user"></i> <b>الاسم العربي:</b> ${data.name_ar}</div>
+                    <div class="detail-row"><i class="fas fa-globe"></i> <b>الاسم الإنجليزي:</b> ${data.name_en}</div>
+                    <div class="detail-row"><i class="fas fa-building"></i> <b>الإدارة:</b> ${data.admin_name}</div>
+                    <div class="detail-row"><i class="fas fa-id-card"></i> <b>رقم الموظف:</b> ${data.employee_no}</div>
+                    <div class="detail-row"><i class="fas fa-id-badge"></i> <b>رقم السجل المدني:</b> ${data.national_id}</div>
+                    <div class="detail-row"><i class="fas fa-flag"></i> <b>الجنسية:</b> ${data.nationality}</div>
+                    <div class="detail-row"><i class="fas fa-phone-alt"></i> <b>الجوال:</b> ${data.mobile}</div>
+                    <div class="detail-row"><i class="fas fa-calendar-alt"></i> <b>تاريخ الطلب:</b> ${data.date}</div>
+                    <div class="detail-row"><i class="fas fa-info-circle"></i> <b>الحالة:</b> ${data.status}</div>
+                    <hr>
+                    <div class="detail-row">${fileHtml}</div>
+                </div>
+            `,
+            confirmButtonText: 'إغلاق',
+            confirmButtonColor: '#0b3c5d'
+        });
+    });
+}
+</script>
+<script src="{{ url_for('static', filename='translator.js') }}"></script>
+</body>
+</html>

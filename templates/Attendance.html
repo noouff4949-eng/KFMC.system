@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النظام الذكي | الإدارة الشاملة</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Attendance.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --primary: #0b3c5d;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+        }
+
+        /* إصلاح مشكلة ظهور التنبيه خلف النافذة */
+        .swal2-container {
+            z-index: 3000 !important;
+        }
+
+        /* تنسيق النافذة المنبثقة (Modal) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* أزرار الإجراءات داخل البوب أب */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .btn-action {
+            padding: 12px; border: none; border-radius: 8px; font-family: 'Almarai';
+            font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        /* التقرير الأسبوعي */
+        .sticky-name { position: sticky; right: 0; background: white; z-index: 5; font-weight: bold; border-left: 2px solid #eee !important; }
+        .warning-row { background-color: #fff5f5 !important; }
+        .alert-tag { background: #e74c3c; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 5px; }
+        
+        /* كروت الإحصائيات */
+        .stat-card { background: white; padding: 20px; border-radius: 15px; text-align: center; border-bottom: 4px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="Logo">
+            <h2>لوحة الإدارة</h2>
+        </div>
+        <ul class="nav-menu">
+            <a href="/" class="nav-link"><li class="nav-item"><i class="fas fa-home"></i> <span>الرئيسية</span></li></a>
+            <a href="/dashboard" class="nav-link"><li class="nav-item"><i class="fas fa-th-large"></i> <span>الداشبورد</span></li></a>
+            <a href="/attendance" class="nav-link"><li class="nav-item active"><i class="fas fa-user-check"></i> <span>الحضور والانصراف</span></li></a>
+            <a href="/evaluation" class="nav-link"><li class="nav-item"><i class="fas fa-star"></i> <span>تقييم المتدربين</span></li></a>
+            <a href="/admin/clearance" class="nav-link"><li class="nav-item"><i class="fas fa-file-signature"></i> <span>طلبات إخلاء الطرف</span></li></a>
+            <a href="/settings" class="nav-link"><li class="nav-item"><i class="fas fa-cog"></i> <span>الإعدادات</span></li></a>
+            <a href="/logout" class="nav-link" style="margin-top: auto; color: #ff4d4d;">
+                <li class="nav-item"><i class="fas fa-sign-out-alt"></i> <span>تسجيل الخروج</span></li>
+            </a>
+        </ul>
+    </aside>
+
+    <main class="main-container">
+        <div class="header-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h1 style="color: var(--primary);">مركز الحضور والتقارير</h1>
+            <div style="background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: bold; color: var(--primary);">
+                <i class="fas fa-calendar-alt"></i> التاريخ اليوم: {{ datetime.now().strftime('%Y-%m-%d') }}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+            <div class="stat-card" style="border-color: var(--success);">
+                <span style="color: #888;">حاضرون اليوم</span>
+                <div id="stat-present" style="font-size: 24px; font-weight: 800; color: var(--success);">0</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--danger);">
+                <span style="color: #888;">غائبون اليوم</span>
+                <div id="stat-absent" style="font-size: 24px; font-weight: 800; color: var(--danger);">0</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--warning);">
+                <span style="color: #888;">إنذارات الغياب</span>
+                <div id="stat-warnings" style="font-size: 24px; font-weight: 800; color: var(--warning);">0</div>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            <i class="fas fa-search" style="margin: 0 15px; color: #ccc;"></i>
+            <input type="text" id="masterSearch" placeholder="ابحث عن اسم المتدرب أو المنشأة..." style="width: 100%; border: none; outline: none; font-family: 'Almarai';">
+        </div>
+
+        <div class="data-section">
+            <h3 style="margin-bottom: 15px; color: var(--primary);"><i class="fas fa-bolt"></i> التحضير المباشر (اضغط على الاسم لفتح الخيارات)</h3>
+            <table id="dailyTable">
+                <thead>
+                    <tr>
+                        <th>المتدرب</th>
+                        <th>المنشأة</th>
+                        <th>دخول</th>
+                        <th>خروج</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in trainees %}
+                    <tr onclick="openModal('{{ app.id }}', '{{ app.full_name }}', '{{ app.assigned_facility }}')" style="cursor: pointer;">
+                        <td style="font-weight: bold;">{{ app.full_name }}</td>
+                        <td>{{ app.assigned_facility or '---' }}</td>
+                        <td style="font-family: monospace;">{{ app.check_in or '--:--' }}</td>
+                        <td style="font-family: monospace;">{{ app.check_out or '--:--' }}</td>
+                        <td><span id="badge-{{ app.id }}" class="status-label">{{ app.status or 'انتظار' }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <hr style="margin: 40px 0; border: 0; border-top: 2px dashed #eee;">
+
+        <div class="data-section" style="border-top: 4px solid var(--primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: var(--primary); margin: 0;"><i class="fas fa-table"></i> سجل الحضور الأسبوعي (آخر 7 أيام)</h3>
+                <button onclick="exportExcel()" style="background: #1d6f42; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    <i class="fas fa-file-excel"></i> تصدير Excel
+                </button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table id="weeklyTable">
+                    <thead>
+                        <tr>
+                            <th class="sticky-name">المتدرب</th>
+                            {% for date in week_dates %}
+                            <th style="font-size: 11px;">{{ date }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in weekly_report %}
+                        <tr class="w-row">
+                            <td class="sticky-name w-name">{{ row.name }}</td>
+                            {% for status in row.days %}
+                            <td style="text-align: center;">
+                                {% if status == 'حاضر' %}<i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                {% elif 'تأخير' in status %}<i class="fas fa-clock" style="color: var(--warning);"></i>
+                                {% elif 'استئذان' in status %}<i class="fas fa-door-open" style="color: var(--info);"></i>
+                                {% elif 'مهمة' in status %}<i class="fas fa-briefcase" style="color: #9b59b6;"></i>
+                                {% else %}<span style="color: var(--danger); font-size: 11px; font-weight: bold;">غائب</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <h3 id="m-name" style="color: var(--primary); margin-bottom: 5px;">اسم المتدرب</h3>
+            <p id="m-facility" style="color: #888; font-size: 12px; margin-bottom: 15px;">المنشأة</p>
+            <hr>
+            <div class="action-grid">
+                <button class="btn-action" style="background: #e8f5e9; color: #2e7d32;" onclick="submit('حاضر')"><i class="fas fa-check"></i> تحضير</button>
+                <button class="btn-action" style="background: #e3f2fd; color: #1565c0;" onclick="submit('انصراف')"><i class="fas fa-sign-out-alt"></i> انصراف</button>
+                <button class="btn-action" style="background: #fff3e0; color: #ef6c00;" onclick="submit('تأخير بعذر')"><i class="fas fa-history"></i> تأخير بعذر</button>
+                <button class="btn-action" style="background: #fbe9e7; color: #d84315;" onclick="submit('تأخير بدون عذر')"><i class="fas fa-user-clock"></i> تأخير مفاجئ</button>
+                <button class="btn-action" style="background: #f3e5f5; color: #7b1fa2;" onclick="submit('استئذان')"><i class="fas fa-door-open"></i> استئذان</button>
+                <button class="btn-action" style="background: #e0f2f1; color: #00695c;" onclick="submit('مهمة عمل')"><i class="fas fa-briefcase"></i> مهمة عمل</button>
+                <button class="btn-action" style="background: #fafafa; border: 1px solid #ddd;" onclick="submit('غياب بعذر')"><i class="fas fa-file-medical"></i> غياب بعذر</button>
+                <button class="btn-action" style="background: #ffebee; color: #c62828;" onclick="submit('غياب بدون عذر')"><i class="fas fa-times"></i> غياب كلي</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <input type="text" id="m-note" placeholder="أضف ملاحظة أو سبب هنا (اختياري)..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: 'Almarai';">
+            </div>
+            <button onclick="closeModal()" style="width: 100%; margin-top: 15px; padding: 10px; background: #f5f5f5; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+    let activeId = null;
+
+    function openModal(id, name, fac) {
+        activeId = id;
+        document.getElementById('m-name').innerText = name;
+        document.getElementById('m-facility').innerText = fac || 'غير محدد';
+        document.getElementById('m-note').value = '';
+        document.getElementById('actionModal').style.display = 'block';
+    }
+
+    function closeModal() { document.getElementById('actionModal').style.display = 'none'; }
+
+    function submit(type) {
+        // نغلق المودال أولاً لكي لا يحجب التنبيه
+        closeModal();
+
+        Swal.fire({
+            title: 'جاري الحفظ...',
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        const now = new Date();
+        const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        const date = now.toISOString().split('T')[0];
+        const note = document.getElementById('m-note').value;
+
+        fetch('/submit_attendance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: activeId, type: type, time: time, date: date, note: note })
+        }).then(res => res.json()).then(data => {
+            if(data.status === 'success') {
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'تم تسجيل الحالة', 
+                    text: type, 
+                    timer: 1200, 
+                    showConfirmButton: false 
+                }).then(() => location.reload());
+            }
+        }).catch(err => Swal.fire('خطأ', 'فشل في الاتصال بالسيرفر', 'error'));
+    }
+
+    // محرك البحث
+    document.getElementById('masterSearch').addEventListener('keyup', function() {
+        let val = this.value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+    });
+
+    // تحديث الإحصائيات والإنذارات عند التحميل
+    window.onload = function() {
+        let p = 0, a = 0, w = 0;
+        document.querySelectorAll('[id^="badge-"]').forEach(b => {
+            let t = b.innerText.trim();
+            if(['حاضر', 'انصراف', 'مهمة عمل'].includes(t)) p++;
+            else if(['انتظار', 'غياب بدون عذر'].includes(t)) a++;
+        });
+        
+        document.querySelectorAll('.w-row').forEach(row => {
+            let abs = 0;
+            row.querySelectorAll('td').forEach(td => { if(td.innerText.trim() === 'غائب') abs++; });
+            if(abs >= 3) {
+                w++;
+                row.classList.add('warning-row');
+                row.querySelector('.w-name').innerHTML += '<span class="alert-tag">إنذار</span>';
+            }
+        });
+        document.getElementById('stat-present').innerText = p;
+        document.getElementById('stat-absent').innerText = a;
+        document.getElementById('stat-warnings').innerText = w;
+    };
+
+    function exportExcel() {
+        let table = document.getElementById("weeklyTable");
+        let html = `<html><head><meta charset="UTF-8"></head><body dir="rtl">${table.outerHTML}</body></html>`;
+        let url = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html);
+        let link = document.createElement("a");
+        link.download = "تقرير_الحضور_الأسبوعي.xls";
+        link.href = url;
+        link.click();
+    }
+    
+    // إغلاق المودال عند الضغط خارجه
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('actionModal')) closeModal();
+    }
+    </script>
+    <script src="{{url_for('static',filename='translator.js') }}"></script>
+</body>
+</html>

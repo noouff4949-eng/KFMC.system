@@ -1,0 +1,196 @@
+/* --- إعدادات الصفحة الأساسية --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Almarai', sans-serif;
+}
+
+body {
+    background-color: #fcfdfe;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* --- Hero Section (بناءً على ذوقك) --- */
+.hero-section {
+    background: linear-gradient(rgba(7, 45, 75, 0.9), rgba(11, 95, 179, 0.8)), url('/static/KFMC.jpg') center/cover;
+    padding: 80px 20px;
+    text-align: center;
+    color: white;
+    clip-path: ellipse(150% 100% at 50% 0%);
+    margin-bottom: 40px;
+}
+
+.hero-section h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+.hero-section p { font-size: 16px; opacity: 0.9; }
+
+/* --- حاوية البرامج والبحث --- */
+.programs-container {
+    padding: 20px 5%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* --- تنسيق شريط البحث المودرن --- */
+.search-box-container input {
+    width: 100%;
+    max-width: 600px;
+    padding: 15px 25px;
+    border-radius: 50px;
+    border: 2px solid #e1e8ed;
+    font-size: 16px;
+    transition: 0.3s;
+    outline: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.search-box-container input:focus {
+    border-color: #0b5fb3;
+    box-shadow: 0 10px 20px rgba(11, 95, 179, 0.1);
+}
+
+/* --- تنسيق الجدول الاحترافي (Data Section) --- */
+.data-section {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    padding: 10px;
+    margin-top: 20px;
+    border: 1px solid #f0f0f0;
+}
+
+#programsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#programsTable thead tr {
+    background: #0b3c5d;
+    color: white;
+    text-align: right;
+}
+
+#programsTable th {
+    padding: 20px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#programsTable td {
+    padding: 20px;
+    font-size: 14px;
+    color: #444;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+/* جعل اسم البرنامج بارز */
+#programsTable td strong {
+    color: #0b3c5d;
+    font-size: 15px;
+    display: block;
+}
+
+/* تأثير التمرير على الصفوف */
+#programsTable tbody tr:hover {
+    background-color: #f4f8fb;
+    transition: 0.2s;
+}
+
+/* زر التسجيل الأنيق */
+.btn-register {
+    display: inline-block;
+    background: #28a745;
+    color: white !important;
+    padding: 8px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    transition: 0.3s;
+    border: none;
+}
+
+.btn-register:hover {
+    background: #218838;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+/* --- الفوتر --- */
+footer {
+    background: #0b3c5d;
+    color: white;
+    padding: 30px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* تنسيق أزرار التبديل */
+.view-btn {
+    padding: 10px 20px;
+    border: 1px solid #0b3c5d;
+    background: white;
+    color: #0b3c5d;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.view-btn.active {
+    background: #0b3c5d;
+    color: white;
+}
+
+/* تنسيق شبكة الكروت */
+.programs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.course-card-item {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    transition: 0.3s;
+}
+
+.course-card-item:hover { transform: translateY(-5px); }
+
+.card-header-mini {
+    padding: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.card-content { padding: 20px; }
+.card-content h3 { font-size: 17px; margin-bottom: 10px; color: #0b3c5d; height: 45px; overflow: hidden; }
+.card-content p { font-size: 13px; color: #777; margin-bottom: 15px; }
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 20px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+}
+
+.btn-register-card {
+    display: block;
+    text-align: center;
+    background: #28a745;
+    color: white !important;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}

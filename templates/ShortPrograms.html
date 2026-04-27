@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>البرامج التدريبية القصيرة | التجمع الصحي الثاني</title>
+    <link rel="icon" href="{{ url_for('static', filename='Logo1.webp') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ShortPrograms.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* تنسيقات النافذة المنبثقة */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 2000; 
+            justify-content: center; 
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .close-modal {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+        .modal-form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #0b3c5d;
+        }
+        .modal-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-family: 'Almarai';
+            outline: none;
+            transition: 0.3s;
+        }
+        .modal-form-group input:focus {
+            border-color: #0b3c5d;
+        }
+        .btn-submit-reg {
+            width: 100%;
+            padding: 14px;
+            background: #0b3c5d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .btn-submit-reg:hover {
+            background: #082d46;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo-section">
+            <img src="{{ url_for('static', filename='Logo.jpg') }}" alt="شعار التجمع" class="logo-img">
+            <div class="logo-text">
+                <h2>التجمع الصحي الثاني</h2>
+                <span>Second Health Cluster</span>
+            </div>
+        </a>
+        <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+            <button id="lang-switch-btn" onclick="toggleLanguage()" class="staff-login-btn">
+                <i class="fas fa-globe"></i> 
+                <span id="lang-text">English</span>
+            </button>
+            <a href="/login" class="staff-login-btn">
+                <i class="fas fa-user-lock"></i>
+                <span>دخول الموظفين</span>
+            </a>
+        </div>
+    </header>
+
+    <nav>
+        <div class="nav-bar">
+            <a href="/" class="nav-link">الرئيسية</a>
+            <a href="/steps" class="nav-link">خطوات التسجيل</a>
+            <a href="/programs" class="nav-link active">البرامج القصيرة</a>
+            <a href="/available" class="nav-link">الحلقات التطبيقية</a>
+            <a href="/track" class="nav-link">متابعة الطلب</a>
+            <a href="/clearance" class="nav-link">إخلاء الطرف</a>
+            <a href="/contact" class="nav-link">تواصل معنا</a>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <h1>البرامج التدريبية القصيرة</h1>
+        <p>استعرض أقرب الفرص التدريبية المتاحة في مدينة الملك فهد الطبية ومرافق التجمع</p>
+    </section>
+
+    <main class="programs-container">
+        
+        <div class="controls-wrapper" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            <div class="search-box-container" style="flex-grow: 1;">
+                <input type="text" id="courseSearch" onkeyup="filterContent()" placeholder="🔍 ابحث عن اسم البرنامج، الرمز، أو المجال..." style="width: 100%; max-width: 500px; padding: 12px 25px; border-radius: 30px; border: 2px solid #0b3c5d; outline: none; font-family: 'Almarai';">
+            </div>
+            
+            <div class="view-switcher" style="display: flex; gap: 10px;">
+                <button onclick="switchView('grid')" class="view-btn active" id="btnGrid"><i class="fas fa-th-large"></i> عرض الكروت</button>
+                <button onclick="switchView('list')" class="view-btn" id="btnList"><i class="fas fa-list"></i> عرض الجدول</button>
+            </div>
+        </div>
+
+        <div id="gridView" class="programs-grid">
+            {% for course in courses %}
+            <div class="course-card-item">
+                <div class="card-header-mini {{ 'tech-bg' if 'تقنية' in course.category or 'إدارة' in course.category else ('health-bg' if 'صحي' in course.category or 'تمريض' in course.category else 'quality-bg') }}">
+                    <i class="fas fa-bookmark"></i>
+                    <span>{{ course.category }}</span>
+                </div>
+                <div class="card-content">
+                    <span class="course-code-tag">{{ course.course_code }}</span>
+                    <h3>{{ course.title }}</h3>
+                    
+                    <div class="card-details">
+                        <p><i class="fas fa-users" style="color: #0b5fb3;"></i> <strong>الفئة:</strong> {{ course.target_group }}</p>
+                        <p><i class="fas fa-map-marker-alt" style="color: #0b5fb3;"></i> <strong>المقر:</strong> {{ course.location }}</p>
+                    </div>
+
+                    <div class="card-meta">
+                        <span><i class="far fa-calendar-alt"></i> {{ course.start_date_m }}</span>
+                        <span><i class="far fa-clock"></i> {{ course.duration }} أيام</span>
+                    </div>
+                    <button onclick="openRegModal('{{ course.id }}', '{{ course.title }}')" class="btn-register-card" style="border:none; width:100%; cursor:pointer;">سجل الآن</button>
+                </div>
+            </div>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #aaa;">
+                <i class="fas fa-calendar-times" style="font-size: 40px; margin-bottom: 10px;"></i>
+                <p>لا توجد دورات تبدأ قريباً، جرب البحث لاحقاً</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="listView" class="data-section" style="display: none; overflow-x: auto;">
+            <table id="programsTable" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #0b3c5d; color: white;">
+                        <th style="padding: 15px; text-align: right;">اسم البرنامج</th>
+                        <th style="text-align: right;">المجال</th>
+                        <th style="text-align: right;">الفئة المستهدفة</th>
+                        <th style="text-align: right;">البداية (ميلادي)</th>
+                        <th style="text-align: right;">المدة</th>
+                        <th style="text-align: right;">المقر</th>
+                        <th style="text-align: right;">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;">
+                            <strong>{{ course.title }}</strong>
+                            <small style="color: #888; display: block;">رمز: {{ course.course_code }}</small>
+                        </td>
+                        <td>{{ course.category }}</td>
+                        <td><span class="badge-target">{{ course.target_group }}</span></td>
+                        <td style="direction: ltr;">{{ course.start_date_m }}</td>
+                        <td>{{ course.duration }} أيام</td>
+                        <td>{{ course.location }}</td>
+                        <td>
+                            <button onclick="openRegModal('{{ course.id }}', '{{ course.title }}')" class="btn-register-table" style="border:none; cursor:pointer;">سجل</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="registrationModal" class="modal-overlay">
+        <div class="modal-card">
+            <span class="close-modal" onclick="closeRegModal()">&times;</span>
+            <h3 id="modalCourseTitle" style="color: #0b3c5d; margin-bottom: 20px; font-size: 1.4rem;">التسجيل في البرنامج</h3>
+            
+            <form id="courseRegForm">
+                <input type="hidden" id="selectedCourseId">
+                
+                <div class="modal-form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="applicantName" placeholder="أدخل اسمك الرباعي" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>رقم الهوية / الإقامة</label>
+                    <input type="text" id="applicantId" maxlength="10" placeholder="10XXXXXXXX" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="applicantEmail" placeholder="example@mail.com" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>رقم الجوال</label>
+                    <input type="tel" id="applicantPhone" placeholder="05XXXXXXXX" required>
+                </div>
+
+                <button type="submit" class="btn-submit-reg">تأكيد التسجيل في البرنامج</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // تبديل العرض
+        function switchView(view) {
+            const grid = document.getElementById('gridView');
+            const list = document.getElementById('listView');
+            const btnGrid = document.getElementById('btnGrid');
+            const btnList = document.getElementById('btnList');
+
+            if (view === 'grid') {
+                grid.style.display = 'grid';
+                list.style.display = 'none';
+                btnGrid.classList.add('active');
+                btnList.classList.remove('active');
+            } else {
+                grid.style.display = 'none';
+                list.style.display = 'block';
+                btnGrid.classList.remove('active');
+                btnList.classList.add('active');
+            }
+        }
+
+        // البحث
+        function filterContent() {
+            let input = document.getElementById('courseSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('course-card-item');
+            for (let card of cards) {
+                card.style.display = card.textContent.toLowerCase().includes(input) ? "" : "none";
+            }
+            let rows = document.querySelector("#programsTable tbody").rows;
+            for (let row of rows) {
+                row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none";
+            }
+        }
+
+        // وظائف البوب اب
+        function openRegModal(courseId, courseTitle) {
+            document.getElementById('selectedCourseId').value = courseId;
+            document.getElementById('modalCourseTitle').innerText = "تسجيل في: " + courseTitle;
+            document.getElementById('registrationModal').style.display = 'flex';
+        }
+
+        function closeRegModal() {
+            document.getElementById('registrationModal').style.display = 'none';
+        }
+
+        // معالجة إرسال الفورم
+        document.getElementById('courseRegForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const registrationData = {
+                course_id: document.getElementById('selectedCourseId').value,
+                full_name: document.getElementById('applicantName').value,
+                national_id: document.getElementById('applicantId').value,
+                email: document.getElementById('applicantEmail').value,
+                phone: document.getElementById('applicantPhone').value
+            };
+
+            fetch('/register_course', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(registrationData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم التسجيل بنجاح!',
+                        text: data.message,
+                        confirmButtonColor: '#0b3c5d'
+                    });
+                    closeRegModal();
+                    document.getElementById('courseRegForm').reset();
+                } else {
+                    Swal.fire('خطأ!', data.message, 'error');
+                }
+            })
+            .catch(err => {
+                Swal.fire('خطأ!', 'فشل الاتصال بالخادم', 'error');
+            });
+        });
+
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function(event) {
+            let modal = document.getElementById('registrationModal');
+            if (event.target == modal) closeRegModal();
+        }
+    </script>
+    <script src="{{ url_for('static', filename='translator.js') }}"></script>
+</body>
+</html>
