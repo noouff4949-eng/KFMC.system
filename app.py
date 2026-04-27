@@ -332,8 +332,16 @@ def contact():
 
 @app.route('/settings')
 def settings():
-    if not session.get('logged_in'): return redirect(url_for('login'))
-    return render_template('Settings.html', admins=AdminUser.query.all())
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    try:
+        admins = AdminUser.query.all()
+    except Exception as e:
+        print("ERROR in settings:", e)
+        admins = []
+
+    return render_template('Settings.html', admins=admins)
 
 @app.route('/update_full_status', methods=['POST'])
 def update_full_status():
