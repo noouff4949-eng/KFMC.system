@@ -87,10 +87,6 @@ class Course(db.Model):
     duration = db.Column(db.String(50))
     target_group = db.Column(db.String(100))
     location = db.Column(db.String(100))
-
-with app.app_context():
-    db.create_all()
-    load_excel_to_db('programs.xlsx', db, Course)
     
 class AppliedWorkshop(db.Model):
     __tablename__ = 'applied_workshops'
@@ -101,7 +97,10 @@ class AppliedWorkshop(db.Model):
     jeddah_dates = db.Column(db.Text)
     dammam_dates = db.Column(db.Text)
     abha_dates = db.Column(db.Text)
-
+with app.app_context():
+    db.create_all()
+    load_excel_to_db('programs.xlsx', db, Course)
+    load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
 class Message(db.Model):
     __tablename__ = 'messages'
     id = db.Column(db.Integer, primary_key=True)
@@ -118,7 +117,10 @@ class AdminUser(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), default='viewer')
-
+with app.app_context():
+    db.create_all()
+    load_excel_to_db('programs.xlsx', db, Course)
+    load_workshops_to_db('workshops.xlsx', db, AppliedWorkshop)
 class ClearanceRequest(db.Model):
     __tablename__ = 'clearance_requests'
     id = db.Column(db.Integer, primary_key=True)
@@ -534,7 +536,6 @@ def register_course():
     except Exception as e:
         print(f"CRITICAL ERROR: {str(e)}")
         db.session.rollback(); return jsonify({"status": "error", "message": str(e)}), 500
-with app.app_context():
-    db.create_all()
+
 if __name__ == '__main__':
     app.run(debug=True)
