@@ -341,7 +341,7 @@ def settings():
         print("ERROR in settings:", e)
         admins = []
 
-    return render_template('Settings.html', admins=admins)
+    return render_template('settings.html', admins=admins)
 
 @app.route('/update_full_status', methods=['POST'])
 def update_full_status():
