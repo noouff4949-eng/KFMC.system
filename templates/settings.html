@@ -96,7 +96,9 @@
                         <tr>
                             <td>
                                 <div class="user-mini">
-                                    <div class="avatar">{{ admin.name[0] | upper }}</div>
+                                    <div class="avatar">
+                                        {{ admin.name[0] | upper if admin.name else '?' }}
+                                    </div>
                                     <div><strong>{{ admin.name }}</strong><br><small>{{ admin.email }}</small></div>
                                 </div>
                             </td>
