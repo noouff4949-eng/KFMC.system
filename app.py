@@ -132,7 +132,13 @@ class ClearanceRequest(db.Model):
     status = db.Column(db.String(50), default='Pending')
 
 # --- المسارات (Routes) ---
-
+@app.before_request
+def setup_once():
+    if not hasattr(app, 'db_initialized'):
+        db.create_all()
+        load_excel_to_db('programs.xlsx')
+        load_workshops_to_db('workshops.xlsx')
+        app.db_initialized = True
 @app.route('/')
 def index(): return render_template('index.html')
 
@@ -534,4 +540,6 @@ def register_course():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        load_excel_to_db('programs.xlsx')        # 👈 مهم
+        load_workshops_to_db('workshops.xlsx')  # 👈 مهم
     app.run(host='127.0.0.1', port=5000, debug=True)
