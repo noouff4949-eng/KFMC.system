@@ -23,9 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_dir, 'k
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()
-    load_excel_to_db('programs.xlsx', db, Course)
+
 
 class CourseRegistration(db.Model):
     __tablename__ = 'course_registrations'
@@ -90,6 +88,10 @@ class Course(db.Model):
     target_group = db.Column(db.String(100))
     location = db.Column(db.String(100))
 
+with app.app_context():
+    db.create_all()
+    load_excel_to_db('programs.xlsx', db, Course)
+    
 class AppliedWorkshop(db.Model):
     __tablename__ = 'applied_workshops'
     id = db.Column(db.Integer, primary_key=True)
