@@ -288,8 +288,8 @@ def get_applicant_details(id):
 
 @app.route('/programs')
 def programs():
-    smart_courses = Course.query.all()
-    return render_template('ShortPrograms.html', courses=smart_courses)
+smart_courses = Course.query.all()
+return render_template('ShortPrograms.html', courses=smart_courses)
     
 @app.route('/available')
 def available():
