@@ -1,5 +1,4 @@
 import pandas as pd
-from app import app, db, Course
 from datetime import datetime
 
 def find_column_by_keywords(df, keywords):
@@ -11,7 +10,7 @@ def find_column_by_keywords(df, keywords):
             return col
     return None
 
-def load_excel_to_db(file_path):
+def load_excel_to_db(file_path, db, Course):
     try:
         # قراءة الملف
         df = pd.read_excel(file_path)
@@ -19,7 +18,7 @@ def load_excel_to_db(file_path):
         print(f"خطأ في قراءة الملف: {e}")
         return
 
-    with app.app_context():
+    
         # البحث عن أسماء الأعمدة الفعلية في ملفك
         col_map = {
             'branch': find_column_by_keywords(df, ['الفرع']),
