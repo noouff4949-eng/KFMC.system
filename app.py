@@ -4,7 +4,8 @@ from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
 from datetime import timedelta
-
+from excel_loader import load_excel_to_db
+from workshop_loader import load_workshops_to_db
 # 1. إعداد التطبيق
 app = Flask(__name__)
 
