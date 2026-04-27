@@ -540,6 +540,7 @@ def register_course():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        load_excel_to_db('programs.xlsx')        # 👈 مهم
-        load_workshops_to_db('workshops.xlsx')  # 👈 مهم
+
+        load_excel_to_db('programs.xlsx', db, Course)
+
     app.run(host='127.0.0.1', port=5000, debug=True)
