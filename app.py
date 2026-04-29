@@ -46,6 +46,9 @@ class Applicant(db.Model):
     major = db.Column(db.String(100), nullable=False)
     graduation_year = db.Column(db.Integer, nullable=False)
     email = db.Column(db.String(255), nullable=False)
+    supervisor_name = db.Column(db.String(255))
+    supervisor_email = db.Column(db.String(255))
+    supervisor_phone = db.Column(db.String(20))
 
     university_letter = db.Column(db.String(255))
     status = db.Column(db.String(50), default='استقبال الطلب')
@@ -208,6 +211,9 @@ def apply():
                 major=request.form.get('major'),
                 graduation_year=request.form.get('graduation_year'),
                 email=request.form.get('email'),
+                supervisor_name=request.form.get('supervisor_name'),
+                supervisor_email=request.form.get('supervisor_email'),
+                supervisor_phone=request.form.get('supervisor_phone'),
                 university_letter=filename,
                 status='استقبال الطلب'
             )
@@ -282,10 +288,6 @@ def get_applicant_details(id):
         "assigned_facility": app_obj.assigned_facility,
         "university_letter": app_obj.university_letter,
 
-        # 👇 هذا التعديل المهم
-        "supervisor_name": app_obj.assigned_facility if app_obj.assigned_facility else "-",
-        "supervisor_email": "-",
-        "supervisor_phone": "-",
 
         "short_programs": [p[0] for p in short_progs],
         "applied_workshops": [w[0] for w in workshops]
