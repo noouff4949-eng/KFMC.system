@@ -281,9 +281,7 @@ def get_applicant_details(id):
         "assigned_facility": app_obj.assigned_facility,
         "university_letter": app_obj.university_letter,
 
-        "supervisor_name": app_obj.assigned_facility or "-",
-    "supervisor_email": "-",
-    "supervisor_phone": "-",
+   
         # إرسال القوائم منفصلة للمعاينة
         "short_programs": [p[0] for p in short_progs],
         "applied_workshops": [w[0] for w in workshops]
