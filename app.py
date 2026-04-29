@@ -300,6 +300,12 @@ def get_applicant_details(id):
 @app.route('/programs')
 def programs():
     smart_courses = Course.query.all()
+
+    # 👇 إذا فاضي، يحمل تلقائي
+    if not smart_courses:
+        load_excel_to_db('programs.xlsx', db, Course)
+        smart_courses = Course.query.all()
+
     return render_template('ShortPrograms.html', courses=smart_courses)
     
 @app.route('/available')
