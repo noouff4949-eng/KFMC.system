@@ -250,30 +250,31 @@ def delete_registration():
     db.session.commit()
 
     return jsonify({"status": "success"})
-
 @app.route('/get_applicant_details/<int:id>')
 def get_applicant_details(id):
-    if not session.get('logged_in'): return jsonify({"status": "error"}), 403
+    if not session.get('logged_in'):
+        return jsonify({"status": "error"}), 403
     
     app_obj = db.session.get(Applicant, id)
-    if not app_obj: return jsonify({"status": "error", "message": "غير موجود"}), 404
+    if not app_obj:
+        return jsonify({"status": "error", "message": "غير موجود"}), 404
     
-    # 1. جلب البرامج القصيرة (Short Programs)
+    # البرامج القصيرة
     short_progs = db.session.query(Course.title).join(
         CourseRegistration, Course.id == CourseRegistration.course_id
     ).filter(CourseRegistration.national_id == app_obj.national_id).all()
     
-    # 2. جلب الحلقات التطبيقية (Applied Workshops)
+    # الحلقات التطبيقية
     workshops = db.session.query(AppliedWorkshop.title).join(
         CourseRegistration, AppliedWorkshop.id == CourseRegistration.workshop_id
     ).filter(CourseRegistration.national_id == app_obj.national_id).all()
 
     return jsonify({
-        "full_name": app_obj.full_name, 
+        "full_name": app_obj.full_name,
         "national_id": app_obj.national_id,
-        "phone": app_obj.phone, 
+        "phone": app_obj.phone,
         "university": app_obj.university,
-        "major": app_obj.major, 
+        "major": app_obj.major,
         "graduation_year": app_obj.graduation_year,
         "email": app_obj.email,
         "status": app_obj.status,
@@ -281,8 +282,11 @@ def get_applicant_details(id):
         "assigned_facility": app_obj.assigned_facility,
         "university_letter": app_obj.university_letter,
 
-   
-        # إرسال القوائم منفصلة للمعاينة
+        # 👇 هذا التعديل المهم
+        "supervisor_name": app_obj.assigned_facility if app_obj.assigned_facility else "-",
+        "supervisor_email": "-",
+        "supervisor_phone": "-",
+
         "short_programs": [p[0] for p in short_progs],
         "applied_workshops": [w[0] for w in workshops]
     })
